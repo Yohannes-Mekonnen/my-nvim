@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -o pipefail
+
+SQLCL="${SQLCL:-$HOME/oracle/sqlcl/bin/sql}"
+if [[ ! -x "$SQLCL" ]]; then
+  echo "DB: SQLcl not found at $SQLCL" >&2
+  exit 127
+fi
+
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+
+"$SQLCL" -thin -noupdates "$@" 2>&1 | tee "$tmp"
+status="${PIPESTATUS[0]}"
+
+if grep -qiE 'Connection failed|ORA-12170|ORA-12541|ORA-12514|ORA-12505|ORA-01017|IO Error' "$tmp"; then
+  exit 1
+fi
+
+exit "$status"
