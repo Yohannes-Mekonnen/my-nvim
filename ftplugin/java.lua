@@ -1,0 +1,2 @@
+-- Java LSP is handled by lazyvim.plugins.extras.lang.java
+-- See lua/plugins/java.lua for JDK runtimes.
